@@ -1,4 +1,4 @@
-# No-Crypto Writeup from L.A.R.S
+# No-Crypto Writeup from L.A.R.S.
 
 ## Setup
 
