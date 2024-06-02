@@ -150,7 +150,7 @@ int main()
 }
 ```
 
-Except for the `buf` allocation, we already know how to do all of this stuff.
+Except for the `buf` allocation and the storing of return values, we already know how to do all of this stuff.
 For memory allocation we can look into the code examples again -- specifically [`guess_number.as`](https://github.com/ForwardCom/code-examples/blob/master/guess_number.as) sounds promising, since it should expect user input and thus store strings.
 Here there's two relevant regions:
 ```asm
@@ -161,6 +161,8 @@ int64 parlist[4]                                 // parameter list for printf
 int8 buf[buffersize]                             // input buffer
 bss end
 ```
+
+For storing of return values we can learn (again from the examples) that it's stored in `r0`.
 
 So we can statically allocate memory in the `datap uninitialized` section.
 Now by modifying the `hello.as` program it's quite straight forward to implement our solution:
