@@ -162,9 +162,10 @@ int8 buf[buffersize]                             // input buffer
 bss end
 ```
 
+So we can statically allocate memory in the `datap uninitialized` section.
+
 For storing of return values we can learn (again from the examples) that it's stored in `r0`.
 
-So we can statically allocate memory in the `datap uninitialized` section.
 Now by modifying the `hello.as` program it's quite straight forward to implement our solution:
 ```asm
 %buffersize = 256
