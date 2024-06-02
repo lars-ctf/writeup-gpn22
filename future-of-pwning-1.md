@@ -32,8 +32,8 @@ The file is then emulated with `/app/forw -emu /tmp/binary.ex` and the last 500 
 ### The idea
 
 So apparently we can emulate *any* file in the *ForwardCom* file format `.ex`.
-Looking at the [Github page](https://github.com/ForwardCom) we learn that:
-> Experimental instruction set and computer system with variable-length vector registers
+Looking at the [Github page](https://github.com/ForwardCom) we learn that ForawrdCom is an:
+> [e]xperimental instruction set and computer system with variable-length vector registers.
 
 There we also find a [manual](https://github.com/ForwardCom/manual), [code examples](https://github.com/ForwardCom/code-examples) and the [bintools](https://github.com/ForwardCom/bintools) which *should* compile to the executable `forw` we already have.
 So it *should* be rather straight forward to use this information to simply read the flag from `/flag` and output it to `stdout`.
