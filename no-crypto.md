@@ -262,7 +262,7 @@ The guessed date is correct!
 
 We can store this secret flag on our local machine (e.g. in `flag.enc` again) and decrypt it:
 ```bash
-openssl enc -d -aes-256-cbc -k 2024-05-29T01:31:06+00:00 -pbkdf2 -base64 -in flag_encoded -out flag
+openssl enc -d -aes-256-cbc -k 2024-05-29T01:31:06+00:00 -pbkdf2 -base64 -in flag.enc -out flag
 cat flag
 GPNCTF{<secret flag content>}
 ```
