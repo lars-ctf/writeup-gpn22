@@ -12,7 +12,7 @@ strings that indicate a C-like origin.
 ## Decompilation
 
 We decompile the program using BinaryNinja on the
-[https://dogbolt.org](dogbolt) decompiler explorer:
+[dogbolt](https://dogbolt.org) decompiler explorer:
 
 ``` c
 int32_t main(int32_t argc, char** argv, char** envp)
