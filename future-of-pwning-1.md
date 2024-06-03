@@ -45,7 +45,7 @@ They do have [47](https://github.com/orgs/ForwardCom/followers) followers at the
 
 So, let's first get familiar with the assembly language of *ForwardCom*.
 It seems to be a reasonable approach to start with a *Hello world* project. Therefore we can look in the examples' `hello.as`:
-```asm
+```C
 /****************************  hello.as  **************************************
 * Author:        Agner Fog
 * date created:  2018-02-23
@@ -153,7 +153,7 @@ int main()
 Except for the `buf` allocation and the storing of return values, we already know how to do all of this stuff.
 For memory allocation we can look into the code examples again -- specifically [`guess_number.as`](https://github.com/ForwardCom/code-examples/blob/master/guess_number.as) sounds promising, since it should expect user input and thus store strings.
 Here there's two relevant regions:
-```asm
+```C
 %buffersize = 0x20                               // size of input text buffer
 // ...
 bss section datap uninitialized                  // uninitialized read/write data section
@@ -167,7 +167,7 @@ So we can statically allocate memory in the `datap uninitialized` section.
 For storing of return values we can learn (again from the examples) that it's stored in `r0`.
 
 Now by modifying the `hello.as` program it's quite straight forward to implement our solution:
-```asm
+```C
 %buffersize = 256
 
 extern _fopen: function
