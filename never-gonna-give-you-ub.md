@@ -31,7 +31,7 @@ After entering the team token this gives us an instance for 4 minutes -- challen
 ### Dockerfile
 
 From the `Dockerfile` we learn that the flag lies in `/flag` and that we can merely interact with the program being run via `run.sh`.
-This program is built with `gcc` and compiled without PIE (*Position-independent executables*, meaning that the address space layout is not going to randomized), with no stack protector and optimization level set to 0.
+This program is built with `gcc` and compiled without PIE (*Position-independent executables*, meaning that the address space layout is not going to be randomized), with no stack protector and optimization level set to 0.
 So that should make our lifes easier.
 
 ### run.sh
@@ -171,12 +171,12 @@ pwndbg> stack 40
 ```
 
 Ok, that's a lot. However, from `context backtrace` we know that the return address of the current method is `0x7ffff7df424a` which is at `__libc_start_call_main+122`.
-If we look closely in aboves stack, we find this address on the stack at position `0x7fffffffddb8` (the stack pointer, `rsp`, currently points to `0x7fffffffdcb0`).
+If we look closely in the stack above, we find this address on the stack at position `0x7fffffffddb8` (the stack pointer, `rsp`, currently points to `0x7fffffffdcb0`).
 That's because the return address is always `push`ed on the stack before the function is called, and later `pop`ed again from the stack to determine where to jump back to.
 
 So, what does this help us? Well, the `buf` variable is also gonna be on the stack.
 And since we have no limitation of how much we can write into `buf`, we can overflow it and keep writing nonsense into the stack until we reach the return address.
-There we can write the destination address (`0x4001196`). As soon as the program reaches the `return` statement (i.e. `ret` in assembly) it's going to jump return to `__libc_start_call_main+122`, but rather jump to `scratched_record`.
+There we can write the destination address (`0x4001196`). As soon as the program reaches the `return` statement (i.e. `ret` in assembly) it's not going to return to `__libc_start_call_main+122`, but rather jump to `scratched_record`.
 
 So much for the theory. But how do we achieve this in practice?
 
