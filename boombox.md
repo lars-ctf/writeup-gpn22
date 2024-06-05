@@ -2,7 +2,10 @@
 
 > Backback, rap crap, I got all the Flags 🚩 in my knapsack
 ## WIP
-Boombox, is a crypto challenge. Given a rust program and its output, you have to find a way to decrypt the output. Let's examine the rust programm quick, I'm going to show you the entire code and afterward give you a brief description what's happening.
+Boombox, is a crypto challenge. Given a rust program and its output, you have to find a way to decrypt the output.
+
+## The code
+Let's start by having a quick look at the rust programm. I'm going to show you the entire code and afterward give you a brief description what's happening.
 
 ```rust
 use rand::Rng;
@@ -87,9 +90,11 @@ fn main() {
 
 `main` first generates a random list `mic` with `compose`. Afterward, it decodes the Flag 🚩 into it's ASCII representation and then maps each bit to booleans, (bit=1 <=> true). Now the important part, it calls `record` with `mic` and the previously generated booleans (aka the Flag 🚩). Note that as `mic` contains only 42 values, we split the Flag 🚩 into chunks of equal size and calls `record` for each chunk. Then each chunk and `mic` gets printed. 
 
+## The Flag 🚩 is in your knapsack
+
 At this point, I was thinking, we just need to find the subset sum for each sum over `mic`. The indices of all summed elements in mic would then correspond to the bits of the Flag 🚩. Unfortunately, I also knew that subset sum is a NP-complete problem, so finding a solution for 42 possible summands isn't feasible. Yet, I decided to give it a quick shot and wrote a little python script to test my hypothesis. Unfortunately, my computer was not able to double time flow as fast as Eminem and to no one's surprise, no chunk was decrypted. 
-So I needed to search for a different solution, and typed the words `subset sum crypto` into my search engine of choice, and the first result was [this lecture](https://web.eecs.umich.edu/~cpeikert/lic13/lec05.pdf). Quickly shimming over it, I found the words `Knapsack Cryptography`. Knowing that subset-sum is just a special case of the knapsack (another NP-complete problem), I typed the words `Knapsack Cryptography` into my search engine. This lead me to [this article](https://en.wikipedia.org/wiki/Merkle%E2%80%93Hellman_knapsack_cryptosystem) about the Merkle–Hellman knapsack cryptosystem.
-So I had a look how this cryptosystem works, and realized a striking similarity between the `compose` function and the section `Key generation`. In fact, if you take a closer look at it, you will see that `compose` just implements everything as described in the `Key generation` section. Furthermore, the `Encryption` section aligns with our `record` function. Nice 🎉! We found the used cipher, how cool would it be if there would be if there was a section called `Cryptanalysis` stating that it's rather easy to break the cipher. Oh, wait, there is! Unfortunately it's not really detailed, but after a bit of searching the i found [this great article](https://www.cs.sjsu.edu/faculty/stamp/papers/topics/topic16/Knapsack.pdf) on how to attack the Merkle–Hellman knapsack cryptosystem. If you want to gain a better understanding on how the attack works, I would highly recommend reading the article, if you just here for the top level solution stay with me. The main take away  is that we can construct a matrix of the form:
+So I needed to search for a different solution, and typed the words `subset sum crypto` into my search engine of choice, and the first result was [this lecture](https://web.eecs.umich.edu/~cpeikert/lic13/lec05.pdf). Quickly skimming over it, I found the words `Knapsack Cryptography`. Knowing that subset-sum is just a special case of the knapsack (another NP-complete problem), I typed the words `Knapsack Cryptography` into my search engine. This lead me to [this article](https://en.wikipedia.org/wiki/Merkle%E2%80%93Hellman_knapsack_cryptosystem) about the Merkle–Hellman knapsack cryptosystem.
+So I had a look how this cryptosystem works, and realized a striking similarity between the `compose` function and the section `Key generation`. In fact, if you take a closer look at it, you will see that `compose` just implements everything as described in the `Key generation` section. Furthermore, the `Encryption` section aligns with our `record` function. Nice 🎉! We found the used cipher, how cool would it be if there would be if there was a section called `Cryptanalysis` stating that it's rather easy to break the cipher. Oh, wait, there is! Unfortunately it's not really detailed, but after a bit of searching I found [this great article](https://www.cs.sjsu.edu/faculty/stamp/papers/topics/topic16/Knapsack.pdf) on how to attack the Merkle–Hellman knapsack cryptosystem. If you want to gain a better understanding on how the attack works, I would highly recommend reading the article, if you are just here for the top level solution stay with me. The main take away  is that we can construct a matrix of the form:
 ```
 [I_42x42    0_42x1]
 [Mic_1x42  -C_1x1 ]
@@ -99,10 +104,10 @@ Then we can use the [LLL](https://en.wikipedia.org/wiki/Lenstra%E2%80%93Lenstra%
 
 Next, I wanted to write a python script to find solutions for each block, to my disappointment I couldn't get any library which implements LLL to work. This was about 1 hour before the deadline of the Flag 🚩 submission, so I searched for different options and found [this website](https://shrek.unideb.hu/~tengely/crypto/section-10.html) where you can just paste a list in the form of:
 ```
-[mic, c]
+[mic, C]
 ```
-and it calculates solutions for your input using LLL. And this worked great, apart from the fact, that I had to do this for every chunks by hand. Until I found out that for 2 of the 5 chunks, there was no solution. But after a bit, I realized that I can just change one value in `mic` to a rather large value, and hope the changed value isn't part of the subset-sum. And after a bit of trial and error, I had solutions for every block.
-So I write a little program to encode the bits into letters (In rust of course):
+and it calculates solutions for your input using LLL. And this worked great, apart from the fact, that I had to do this for every chunks by hand. Until I found out that for 2 of the 5 chunks, there was no solution. But after some despair, I realized that I can just change one value in `mic` to a rather large value, and hope the changed value isn't part of the subset-sum. And a bit of trial and error later, I had solutions for every block.
+So I wrote a little program to encode the bits into letters (In rust of course):
 ```rust
 use std::{num::ParseIntError};  
   
