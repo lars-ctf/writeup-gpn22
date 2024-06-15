@@ -1,6 +1,6 @@
 # Archventuretime
 
-Archventuretime is a reversing challenge, where you have to obtain a license-key.
+Archventuretime is a reversing challenge, where you have to obtain a license-key by reversing a binary with checks the key. The binary creates 4 new binaries, which are all compiled for different architectures.
 
 ## First look
 The challenge consists of binary and a Dockerfile. The Dockerfile installs various QEMU packages on an ubuntu system and then starts the binary. 
