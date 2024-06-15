@@ -1,6 +1,6 @@
 # Archventuretime
-## TODO -> still WIP
-Archventuretime is a reversing challenge, where you have to find obtain a license-key.
+
+Archventuretime is a reversing challenge, where you have to obtain a license-key.
 
 ## First look
 The challenge consists of binary and a Dockerfile. The Dockerfile installs various QEMU packages on an ubuntu system and then starts the binary. 
@@ -52,7 +52,7 @@ undefined8 FUN_00101c48(void) {
   return 0;
 }
 ```
-We saw that the functions reads the key and then calls three different functions with it. So let's call the function `readKey` and take a look what the first called function does. We already know, that it takes the license-key as an argument, so I already renamed the parameter and added commands:
+We saw that the functions reads the key and then calls three different functions with it. So let's call the function `readKey` and take a look what the first called function does. We already know, that it takes the license-key as an argument, so I already renamed the parameter and added comments:
 ```c
 
 void FUN_001014a9(char *key) {
@@ -60,7 +60,7 @@ void FUN_001014a9(char *key) {
   ushort **ppuVar2;
   int local_c;
   
-  // ensure that the key is greater than 23d, else print a warning and exit
+  // ensure that the key length is >= 23d, else print a warning and exit
   // since we read keys with length up to 24d we know that the liscence key must exactly be 24d 
   // chars long
   sVar1 = strlen(key);
@@ -161,7 +161,7 @@ void FUN_001015dc(char *strippedKey) {
   // loop with 4 iterations
   for (idx = 0; idx < 4; idx = idx + 1) {
     idx_ = (long)(int)idx;
-                    /* commandPrefix = qemu-riscv64 -L /usr/riscv64-linux-gnu */
+  // command in the form of qemu-riscv64 -L /usr/riscv64-linux-gnu, the architecture changes in every iteration */
     commandPrefix = (&PTR_s_qemu-riscv64_-L_/usr/r iscv64-lin_00129c80)[idx_ * 3];
 
 	// read raw
@@ -179,7 +179,7 @@ void FUN_001015dc(char *strippedKey) {
 	// make the file executable
     chmod((char *)&filename,0x1c0);
 
-	// execute the command qemu-riscv64 -L /usr/riscv64-linux-gnu filename strippedKey
+	// execute the command qemu-riscv64 -L <architecture> filename strippedKey
     snprintf((char *)&local_98,0x80,"%s %s %s",commandPrefix,&filename,strippedKey);
     status = system((char *)&local_98);
 
@@ -293,7 +293,7 @@ ulong main(int param_1,long param_2)
   return succ_;
 }
 ```
-Sort is just a baisc quicksort implementation. So the binary just checks if the inputed liscence-key consists of the same chars as the corret liscence key in arbitrary order. With this we know all chars of our Key `067889BBCKKMOPPUVWYY` and can construct a new key bypassing the first binary:
+Sort is just a basic quicksort implementation. So the binary just checks if the inputed liscence-key consists of the same chars as the correct liscence key in arbitrary order. With this we know all chars of our Key `067889BBCKKMOPPUVWYY` and can construct a new key bypassing the first binary:
 ```
 > rm /tmp/check*
 > ./chal_patched 
@@ -303,7 +303,7 @@ Enter license key> 06788-9BBCK-KMOPP-UVWYY
 checkHhOuNh
 checkJRzpc8
 ```
-Nice! Our second binary, lets also analyze it with ghidra:
+Nice! Our second binary, lets also analyze it with ghidra (I already renamed a few symbols):
 ```c
 
 undefined8 main(int param_1,long param_2) {
@@ -354,13 +354,12 @@ So this method splits the Key into 4 Blocks of 5 and then sums the block seperat
 ```
 Key: 06788-9BBCK-KMOPP-UVWYY (Note: the key is passed without the '-' to the binary)
 Blocks:
-// TODO = I made a mistake here somwhere with the indices
 06788 -> sumNumeric = 0 + 6 + 7 + 8, sumUppercase = 0
 9BBCK -> sumNumeric = 9, sumUppercase = B + B + C + K = 1 + 1 + 2 + 10
-KMOPP -> sumNumeric = 0, sumUppercase = 11 + 13 + 14 + 15
-UVWYY -> sumNumeric = 0, sumUppercase = 20 + 21 + 22 + 24 + 34
+KMOPP -> sumNumeric = 0, sumUppercase = K + M + O + P + P = 10 + 12 + 14 + 15
+UVWYY -> sumNumeric = 0, sumUppercase = U + V + W + Y + Y = 20 + 21 + 22 + 24 + 34
 ```
-Then we take those sums and check each against a constant that we can obtain from the binary. With that we can write a script, which given all possible letters (from the first binary) puts out every possible key (Note that this script puts out some duplicates, but this won't be a problem):
+Then the binary takes those sums and checks each sum against a constant in the data section. With that we can write a script, which given all possible letters (from the first binary) outputs every possible key (Note that this script generates some duplicates, but this won't be a problem):
 ```py
 import itertools  
   
@@ -481,10 +480,6 @@ for i in letter_subsets:
         x3 = i[3] + j[3]  
         if len(x0) == 5 and len(x1) == 5 and len(x2) == 5 and len(x3) == 5:  
             print(x0, x1, x2, x3)
-```
-```
-[('P', 'W', 'Y'), ('M', 'Y'), ('B', 'C', 'U', 'V'), ('B', 'K', 'K', 'O', 'P')]
-[(), ('7',), ('6', '8'), ('8', '9')]
 ```
 With that we can build a new liscence key, which sould get past the first and second binary:
 ```
@@ -760,7 +755,7 @@ undefined8 FUN_00100754(int param_1,long param_ 2) {
   return uVar1;
 }
 ```
-This leaves us with 2 possibilties, reverse the second for-loop or bruteforce the key. With the previous constrains with have about 500k of of possible keys left (including duplicatess). At this point I was pretty hungry and wanted to take a break so I went for the second option and enjoyed some nice Gulasch at GPN:
+This leaves us with 2 possibilties, reverse the second for-loop or bruteforce the key. With the previous constrains we have about 500k (probably lots of duplicates included) possible keys left. At this point I was pretty hungry and wanted to take a break so I went for the second option and enjoyed some nice Gulasch at GPN:
 ```py
 import subprocess  
 import asyncio  
