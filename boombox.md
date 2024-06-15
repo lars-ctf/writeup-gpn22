@@ -1,7 +1,7 @@
 # Boombox
 
 > Backback, rap crap, I got all the Flags 🚩 in my knapsack
-## WIP
+
 Boombox, is a crypto challenge. Given a rust program and its output, you have to find a way to decrypt the output.
 
 ## The code
